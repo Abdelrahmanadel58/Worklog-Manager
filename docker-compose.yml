@@ -10,7 +10,7 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/workdays
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/Worklog
     volumes:
       - .:/app
 
@@ -20,7 +20,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: vois@admin
-      POSTGRES_DB: workdays
+      POSTGRES_DB: Worklog
     ports:
       - "5432:5432"
     volumes:
