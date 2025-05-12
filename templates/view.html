@@ -28,6 +28,22 @@
             </div>
         </form>
 
+        <!-- 📤 Actions -->
+        <div class="buttons mb-4">
+            <button class="button is-primary" onclick="window.print()">🖨️ Print Report</button>
+            <a class="button is-link" href="{{ url_for('export', month=month) }}">📥 Export CSV</a>
+        </div>
+
+        <!-- 📤 Export buttons -->
+        <div class="buttons mb-4">
+            <a class="button is-success" href="{{ url_for('export_csv', month=month) }}">
+                Export CSV
+            </a>
+            <a class="button is-warning" href="{{ url_for('export_excel', month=month) }}">
+                Export Excel
+            </a>
+        </div>
+
         <h2>Work From Office - {{ month }}</h2>
         <table class="table is-striped is-fullwidth">
             <thead>
