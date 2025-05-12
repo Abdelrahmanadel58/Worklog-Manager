@@ -10,6 +10,12 @@
     <div class="container">
         <h1 class="title">Entries for {{ month }}</h1>
 
+        <!-- 🔢 Count summary -->
+        <div class="notification is-info">
+            <strong>Work from Office:</strong> {{ work_count }} day{{ 's' if work_count != 1 else '' }} |
+            <strong>Holidays:</strong> {{ holiday_count }} day{{ 's' if holiday_count != 1 else '' }}
+        </div>
+
         <!-- 🔽 Filter by month form -->
         <form method="get" action="{{ url_for('view') }}" class="box mb-5">
             <div class="field has-addons">
