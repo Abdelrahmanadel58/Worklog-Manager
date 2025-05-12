@@ -10,13 +10,13 @@
     <div class="container">
         <h1 class="title">Entries for {{ month }}</h1>
 
-        <!-- 🔢 Count summary -->
+        <!-- Count summary -->
         <div class="notification is-info">
             <strong>Work from Office:</strong> {{ work_count }} day{{ 's' if work_count != 1 else '' }} |
             <strong>Holidays:</strong> {{ holiday_count }} day{{ 's' if holiday_count != 1 else '' }}
         </div>
 
-        <!-- 🔽 Filter by month form -->
+        <!-- Filter by month form -->
         <form method="get" action="{{ url_for('view') }}" class="box mb-5">
             <div class="field has-addons">
                 <div class="control">
@@ -28,13 +28,13 @@
             </div>
         </form>
 
-        <!-- 📤 Actions -->
+        <!--  Actions -->
         <div class="buttons mb-4">
             <button class="button is-primary" onclick="window.print()">🖨️ Print Report</button>
             <a class="button is-link" href="{{ url_for('export', month=month) }}">📥 Export CSV</a>
         </div>
 
-        <!-- 📤 Export buttons -->
+        <!--  Export buttons -->
         <div class="buttons mb-4">
             <a class="button is-success" href="{{ url_for('export_csv', month=month) }}">
                 Export CSV
