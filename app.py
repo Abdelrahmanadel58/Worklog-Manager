@@ -36,6 +36,28 @@ class Holiday(db.Model):
 def index():
     return render_template("index.html")
 
+@app.route("/export")
+def export():
+    month = request.args.get("month", datetime.now().strftime("%Y-%m"))
+    
+    work_entries = WorkFromOffice.query.filter_by(month=month).all()
+    holiday_entries = Holiday.query.filter_by(month=month).all()
+
+
+    work_data = [{"Date": entry.date, "Day": entry.day, "Type": "Work"} for entry in work_entries]
+    holiday_data = [{"Date": entry.date, "Day": entry.day, "Type": "Holiday"} for entry in holiday_entries]
+
+
+    df = pd.DataFrame(work_data + holiday_data)
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name="Entries")
+
+    output.seek(0)
+    filename = f"entries_{month}.xlsx"
+    return send_file(output, download_name=filename, as_attachment=True, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 @app.route("/export/csv")
 def export_csv():
     month = request.args.get("month", datetime.now().strftime("%Y-%m"))
@@ -83,7 +105,6 @@ def view():
     work_entries = WorkFromOffice.query.filter_by(month=month).all()
     holiday_entries = Holiday.query.filter_by(month=month).all()
     
-    # عدد الأيام
     work_count = len(work_entries)
     holiday_count = len(holiday_entries)
 
