@@ -3,6 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate 
 from datetime import datetime
 import os
+import csv
+from io import StringIO
+from flask import Response
+import pandas as pd
+from flask import send_file
+from io import BytesIO
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///local.db")
@@ -29,6 +35,47 @@ class Holiday(db.Model):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/export/csv")
+def export_csv():
+    month = request.args.get("month", datetime.now().strftime("%Y-%m"))
+    work_entries = WorkFromOffice.query.filter_by(month=month).all()
+    holiday_entries = Holiday.query.filter_by(month=month).all()
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Type", "Date", "Day"])
+
+    for row in work_entries:
+        writer.writerow(["Work", row.date, row.day])
+    for row in holiday_entries:
+        writer.writerow(["Holiday", row.date, row.day])
+
+    output.seek(0)
+    return Response(output, mimetype="text/csv", headers={
+        "Content-Disposition": f"attachment;filename=report_{month}.csv"
+    })
+
+
+@app.route("/export/excel")
+def export_excel():
+    month = request.args.get("month", datetime.now().strftime("%Y-%m"))
+    work_entries = WorkFromOffice.query.filter_by(month=month).all()
+    holiday_entries = Holiday.query.filter_by(month=month).all()
+
+    work_data = [{"Date": entry.date, "Day": entry.day, "Type": "Work"} for entry in work_entries]
+    holiday_data = [{"Date": entry.date, "Day": entry.day, "Type": "Holiday"} for entry in holiday_entries]
+
+    df = pd.DataFrame(work_data + holiday_data)
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name="Entries")
+
+    output.seek(0)
+    filename = f"entries_{month}.xlsx"
+    return send_file(output, download_name=filename, as_attachment=True, mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 @app.route("/view")
 def view():
