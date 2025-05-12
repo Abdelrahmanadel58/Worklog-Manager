@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate 
 from datetime import datetime
 import os
 
@@ -35,7 +35,20 @@ def view():
     month = request.args.get("month", datetime.now().strftime("%Y-%m"))
     work_entries = WorkFromOffice.query.filter_by(month=month).all()
     holiday_entries = Holiday.query.filter_by(month=month).all()
-    return render_template("view.html", work=work_entries, holidays=holiday_entries, month=month)
+    
+    # عدد الأيام
+    work_count = len(work_entries)
+    holiday_count = len(holiday_entries)
+
+    return render_template(
+        "view.html",
+        work=work_entries,
+        holidays=holiday_entries,
+        month=month,
+        work_count=work_count,
+        holiday_count=holiday_count
+    )
+
 
 @app.route("/edit/<entry_type>/<int:entry_id>", methods=["GET", "POST"])
 def edit(entry_type, entry_id):
