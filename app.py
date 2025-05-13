@@ -151,10 +151,14 @@ def add():
         if entry_type == "work":
             if WorkFromOffice.query.filter_by(date=entry_data['date']).first():
                 return "Date already exists in work."
+            if Holiday.query.filter_by(date=entry_data['date']).first():
+                return "This date already exists in holidays."
             db.session.add(WorkFromOffice(**entry_data))
         else:
             if Holiday.query.filter_by(date=entry_data['date']).first():
                 return "Date already exists in holidays."
+            if WorkFromOffice.query.filter_by(date=entry_data['date']).first():
+                return "This date already exists in work."
             db.session.add(Holiday(**entry_data))
 
         db.session.commit()
@@ -162,6 +166,7 @@ def add():
 
     except ValueError:
         return "Invalid date format."
+
 
 if __name__ == "__main__":
     app.run(debug=True)
